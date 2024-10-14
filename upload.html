@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Videos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        #drop-zone {
+            width: 80%;
+            height: 60%;
+            border: 2px dashed #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            cursor: pointer;
+            text-align: center;
+        }
+        #drop-zone.dragover {
+            background-color: #e0e0e0;
+        }
+        #search-page-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="drop-zone">
+        <p>Drag & Drop Videos Here or Click to Upload</p>
+        <input type="file" id="file-input" accept="video/*" style="display: none;">
+    </div>
+
+    <div id="search-page-link">
+        <a href="search.html">Go to Search Page</a>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+
+        // Handle drag and drop events
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('video/')) {
+                saveVideo(file);
+            }
+        });
+
+        // Handle file input (when clicking drop zone)
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('video/')) {
+                saveVideo(file);
+            }
+        });
+
+        // Save video to local storage as Base64
+        function saveVideo(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result;
+                let videos = JSON.parse(localStorage.getItem('videos')) || [];
+                videos.push({ name: file.name, data: base64Data });
+                localStorage.setItem('videos', JSON.stringify(videos));
+                alert('Video uploaded successfully!');
+            };
+            reader.readAsDataURL(file); // Convert file to Base64
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Videos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #search-box {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .video-item {
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .video-item:hover {
+            background-color: #f1f1f1;
+        }
+        video {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Search & Play Videos</h1>
+    <input type="text" id="search-box" placeholder="Search by name..." />
+
+    <div id="video-list"></div>
+
+    <div id="upload-page-link">
+        <a href="upload.html">Go to Upload Page</a>
+    </div>
+
+    <script>
+        const searchBox = document.getElementById('search-box');
+        const videoList = document.getElementById('video-list');
+
+        // Load videos from localStorage
+        let videos = JSON.parse(localStorage.getItem('videos')) || [];
+
+        function displayVideos(videosToDisplay) {
+            videoList.innerHTML = '';
+            videosToDisplay.forEach(video => {
+                const videoItem = document.createElement('div');
+                videoItem.classList.add('video-item');
+                videoItem.innerHTML = `<p>${video.name}</p>`;
+                videoItem.addEventListener('click', () => {
+                    playVideo(video.data, video.name);
+                });
+                videoList.appendChild(videoItem);
+            });
+        }
+
+        // Play selected video
+        function playVideo(data, name) {
+            videoList.innerHTML = `
+                <h2>Now Playing: ${name}</h2>
+                <video controls>
+                    <source src="${data}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            `;
+        }
+
+        // Search functionality
+        searchBox.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredVideos = videos.filter(video => video.name.toLowerCase().includes(searchTerm));
+            displayVideos(filteredVideos);
+        });
+
+        // Initial video display
+        displayVideos(videos);
+    </script>
+
+</body>
+</html>
